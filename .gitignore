@@ -1,0 +1,4 @@
+# binaires
+*.exe
+*.o
+*.out
