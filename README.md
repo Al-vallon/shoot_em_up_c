@@ -6,5 +6,4 @@
 ### lance le run du projet
 
 gcc -o main src/main.c
-
 ./main

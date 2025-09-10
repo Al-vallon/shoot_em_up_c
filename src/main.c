@@ -7,7 +7,7 @@
 #include <fcntl.h>
 
 #define WIDTH 20
-#define HEIGHT 10
+#define HEIGHT 60
 #define MAX_ENEMIES 5
 
 // --- Fonctions Linux pour lecture clavier non bloquante ---
@@ -95,7 +95,7 @@ int main() {
 
 
         // Déplacement ennemis
-        if (enemy_timer >= 10) { // tous les 10 cycles
+        if (enemy_timer >= 40) { // tous les 40 cycles
             for (int i = 0; i < MAX_ENEMIES; i++) {
                 if (enemy_active[i]) {
                     enemy_y[i]++;
@@ -112,10 +112,19 @@ int main() {
                         enemy_active[i] = 0; // ennemi détruit
                         missile_x = -1;     // missile disparait
                     }
-                }
+
+                    if (enemy_active[i] && missile_y == enemy_y[i] && missile_x == enemy_x[i]) {
+                        enemy_active[i] = 0; // ennemi détruit
+                        missile_x = -1;     // missile disparait
+                    }
             }
             enemy_timer = 0;
         }
+    }
+
+
+
+
         // Affichage de la grille
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
