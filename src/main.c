@@ -8,6 +8,7 @@
 
 #define WIDTH 20
 #define HEIGHT 60
+#define MAX_MISSILES 5
 #define MAX_ENEMIES 5
 
 // --- Fonctions Linux pour lecture clavier non bloquante ---
@@ -68,8 +69,13 @@ int main() {
     int y = HEIGHT - 1;
     char input;
 
-    int missile_x = -1;
-    int missile_y = -1;
+    int missile_x[MAX_MISSILES];
+    int missile_y[MAX_MISSILES];
+    int missile_active[MAX_MISSILES];
+
+    for(int i = 0; i < MAX_MISSILES; i++) {
+        missile_active[i] = 0;
+    }
 
     int enemy_x[MAX_ENEMIES] = {0};
     int enemy_y[MAX_ENEMIES] = {0};
@@ -84,66 +90,75 @@ int main() {
     while (1) {
         system("clear"); // Pour Windows utilisez "cls"
 
-        // Déplacement missile
-        if (missile_y >= 0) {
-            missile_y--;
-            if (missile_y < 0) missile_x = -1; // missile hors écran
+        // --- Déplacement missiles ---
+        for (int m = 0; m < MAX_MISSILES; m++) {
+            if (missile_active[m]) {
+                missile_y[m]--;
+                if (missile_y[m] < 0) {
+                    missile_active[m] = 0; // missile hors écran
+                }
+            }
         }
 
-        // incrémentation du timer pour la descente des ennemis
+        // --- Incrémentation du timer pour les ennemis ---
         enemy_timer++;
 
-
-        // Déplacement ennemis
-        if (enemy_timer >= 40) { // tous les 40 cycles
-            for (int i = 0; i < MAX_ENEMIES; i++) {
-                if (enemy_active[i]) {
-                    enemy_y[i]++;
-                    if (enemy_y[i] >= HEIGHT) {
-                        enemy_active[i] = 0; // ennemi hors écran
+        // --- Déplacement ennemis ---
+        if (enemy_timer >= 200) { // tous les 200 cycles
+            for (int e = 0; e < MAX_ENEMIES; e++) {
+                if (enemy_active[e]) {
+                    enemy_y[e]++;
+                    if (enemy_y[e] >= HEIGHT) {
+                        enemy_active[e] = 0; // ennemi hors écran
                     }
                     // Collision avec le vaisseau
-                    if (enemy_y[i] == y && enemy_x[i] >= x && enemy_x[i] < x + strlen(vaisseau)) {
+                    if (enemy_y[e] == y && enemy_x[e] >= x && enemy_x[e] < x + strlen(vaisseau)) {
                         printf("Game Over! Vous avez été touché!\n");
                         return 0;
                     }
-                    // Collision avec le missile
-                    if (missile_y == enemy_y[i] && missile_x == enemy_x[i]) {
-                        enemy_active[i] = 0; // ennemi détruit
-                        missile_x = -1;     // missile disparait
-                    }
-
-                    if (enemy_active[i] && missile_y == enemy_y[i] && missile_x == enemy_x[i]) {
-                        enemy_active[i] = 0; // ennemi détruit
-                        missile_x = -1;     // missile disparait
-                    }
+                }
             }
             enemy_timer = 0;
         }
-    }
 
+        // --- Collision missiles <-> ennemis ---
+        for (int m = 0; m < MAX_MISSILES; m++) {
+            if (missile_active[m]) {
+                for (int e = 0; e < MAX_ENEMIES; e++) {
+                    if (enemy_active[e] &&
+                        missile_y[m] == enemy_y[e] &&
+                        missile_x[m] == enemy_x[e]) {
+                        enemy_active[e] = 0;    // ennemi détruit
+                        missile_active[m] = 0; // missile disparait
+                    }
+                }
+            }
+        }
 
-
-
-        // Affichage de la grille
+        // --- Affichage de la grille ---
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
                 int printed = 0;
 
                 // Missile
-                if (i == missile_y && j == missile_x) {
-                    printf("|");
-                    printed = 1;
+                for (int m = 0; m < MAX_MISSILES; m++) {
+                    if (missile_active[m] && missile_y[m] == i && missile_x[m] == j) {
+                        printf("|");
+                        printed = 1;
+                        break;
+                    }
                 }
+
                 // Vaisseau
-                else if (i == y && j >= x && j < x + strlen(vaisseau)) {
+                if (!printed && i == y && j >= x && j < x + strlen(vaisseau)) {
                     printf("%c", vaisseau[j - x]);
                     printed = 1;
                 }
+
                 // Ennemis
-                else {
-                    for (int k = 0; k < MAX_ENEMIES; k++) {
-                        if (enemy_active[k] && enemy_x[k] == j && enemy_y[k] == i) {
+                if (!printed) {
+                    for (int e = 0; e < MAX_ENEMIES; e++) {
+                        if (enemy_active[e] && enemy_x[e] == j && enemy_y[e] == i) {
                             printf("X");
                             printed = 1;
                             break;
@@ -156,7 +171,7 @@ int main() {
             printf("\n");
         }
 
-        // Lecture clavier
+        // --- Lecture clavier ---
         if (kbhit()) {
             input = getch();
 
@@ -166,13 +181,20 @@ int main() {
             if (input == 's' && y < HEIGHT - 1) y++; // bas
             if (input == 27) break;                  // échap
             if (input == ' ') {                       // tir
-                missile_x = x + strlen(vaisseau)/2;  // centre du vaisseau
-                missile_y = y - 1;
+                for (int m = 0; m < MAX_MISSILES; m++) {
+                    if (!missile_active[m]) {
+                        missile_x[m] = x + strlen(vaisseau)/2;
+                        missile_y[m] = y - 1;
+                        missile_active[m] = 1;
+                        break;
+                    }
+                }
             }
         }
 
-        usleep(50000); // 20fps
+        usleep(50000); // 20 fps
     }
+
 
     printf("Game Over\n");
     return 0;
