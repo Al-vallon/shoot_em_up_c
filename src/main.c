@@ -74,6 +74,7 @@ int main() {
     int enemy_x[MAX_ENEMIES] = {0};
     int enemy_y[MAX_ENEMIES] = {0};
     int enemy_active[MAX_ENEMIES] = {0};
+    int enemy_timer = 0;
 
     srand(time(NULL));
 
@@ -89,26 +90,32 @@ int main() {
             if (missile_y < 0) missile_x = -1; // missile hors écran
         }
 
+        // incrémentation du timer pour la descente des ennemis
+        enemy_timer++;
+
+
         // Déplacement ennemis
-        for (int i = 0; i < MAX_ENEMIES; i++) {
-            if (enemy_active[i]) {
-                enemy_y[i]++;
-                if (enemy_y[i] >= HEIGHT) {
-                    enemy_active[i] = 0; // ennemi hors écran
-                }
-                // Collision avec le vaisseau
-                if (enemy_y[i] == y && enemy_x[i] >= x && enemy_x[i] < x + strlen(vaisseau)) {
-                    printf("Game Over! Vous avez été touché!\n");
-                    return 0;
-                }
-                // Collision avec le missile
-                if (missile_y == enemy_y[i] && missile_x == enemy_x[i]) {
-                    enemy_active[i] = 0; // ennemi détruit
-                    missile_x = -1;     // missile disparait
+        if (enemy_timer >= 10) { // tous les 10 cycles
+            for (int i = 0; i < MAX_ENEMIES; i++) {
+                if (enemy_active[i]) {
+                    enemy_y[i]++;
+                    if (enemy_y[i] >= HEIGHT) {
+                        enemy_active[i] = 0; // ennemi hors écran
+                    }
+                    // Collision avec le vaisseau
+                    if (enemy_y[i] == y && enemy_x[i] >= x && enemy_x[i] < x + strlen(vaisseau)) {
+                        printf("Game Over! Vous avez été touché!\n");
+                        return 0;
+                    }
+                    // Collision avec le missile
+                    if (missile_y == enemy_y[i] && missile_x == enemy_x[i]) {
+                        enemy_active[i] = 0; // ennemi détruit
+                        missile_x = -1;     // missile disparait
+                    }
                 }
             }
+            enemy_timer = 0;
         }
-
         // Affichage de la grille
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
