@@ -81,6 +81,7 @@ int main() {
     int enemy_y[MAX_ENEMIES] = {0};
     int enemy_active[MAX_ENEMIES] = {0};
     int enemy_timer = 0;
+    int enemy_speed = 800;
 
     srand(time(NULL));
 
@@ -104,7 +105,7 @@ int main() {
         enemy_timer++;
 
         // --- Déplacement ennemis ---
-        if (enemy_timer >= 200) { // tous les 200 cycles
+        if (enemy_timer >= enemy_speed) { 
             for (int e = 0; e < MAX_ENEMIES; e++) {
                 if (enemy_active[e]) {
                     enemy_y[e]++;
