@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 `sdl2-config --cflags`
 LDFLAGS = `sdl2-config --libs`
-SRC = src/main.c
+SRC = src/main.c src/game.c
 BIN = shoot_em_up
 
 all:
