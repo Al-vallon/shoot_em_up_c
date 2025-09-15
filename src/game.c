@@ -1,32 +1,24 @@
 #include "game.h"
 
-void init_game(Game *game) {
-    game->x = 320; // centre du carré
-    game->y = 240;
-}
+#include "player.h"
 
-void update_game(Game *game) {
-    // rien pour le moment
+void init_game(Game *game) {
+    init_player(&game->player,"alex", 320, 400);  // centre l’écran
 }
 
 void handle_input(Game *game, SDL_Event *event) {
-    if (event->type == SDL_KEYDOWN) {
-        switch (event->key.keysym.sym) {
-            case SDLK_LEFT: game->x -= 5; break;
-            case SDLK_RIGHT: game->x += 5; break;
-            case SDLK_UP: game->y -= 5; break;
-            case SDLK_DOWN: game->y += 5; break;
-        }
-    }
+    // Ici on route vers le joueur
+    handle_player_input(&game->player, event);
+}
+
+void update_game(Game *game) {
+    update_player(&game->player);
 }
 
 void render_game(Game *game, SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // blanc
-    SDL_Rect rect = { game->x - 25, game->y - 25, 10, 10 }; // carré 50x50
-    SDL_RenderFillRect(renderer, &rect);
+    render_player(&game->player, renderer);
 }
 
 void cleanup_game(Game *game) {
-    // pour l'instant rien à nettoyer
+    cleanup_player(&game->player);
 }
-    
