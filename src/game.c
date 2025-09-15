@@ -1,6 +1,6 @@
 #include "game.h"
+#include "hud/hud.h"
 
-#include "player.h"
 
 void init_game(Game *game) {
     init_player(&game->player,"alex", 320, 400);  // centre l’écran
@@ -17,6 +17,7 @@ void update_game(Game *game) {
 
 void render_game(Game *game, SDL_Renderer *renderer) {
     render_player(&game->player, renderer);
+    render_health_bar(&game->player, renderer);
 }
 
 void cleanup_game(Game *game) {

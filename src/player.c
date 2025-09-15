@@ -36,7 +36,7 @@ void handle_player_input(Player *player, SDL_Event *event) {
 }
 
 void render_player(Player *player, SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // vert
+    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); // cyan
     SDL_Rect rect = { player->ship.x, player->ship.y, player->ship.width, player->ship.height };
     SDL_RenderFillRect(renderer, &rect);
 }
