@@ -1,10 +1,17 @@
+# Makefile pour le jeu Shoot 'Em Up
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 `sdl2-config --cflags`
 LDFLAGS = `sdl2-config --libs`
-SRC = src/main.c src/game.c src/player.c src/hud/hud.c    
+
+
+SRC = $(shell find src -name "*.c")
+
+# Nom du binaire
 BIN = shoot_em_up
 
-all:
+all: $(BIN)
+
+$(BIN): $(SRC)
 	$(CC) $(CFLAGS) $(SRC) -o $(BIN) $(LDFLAGS)
 
 clean:
