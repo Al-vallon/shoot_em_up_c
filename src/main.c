@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include "game.h"
+#include "config.h"
 
 int main(int argc, char *argv[]) {
     SDL_Window *window = NULL;
@@ -15,7 +16,7 @@ int main(int argc, char *argv[]) {
         "Shoot Em Up",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        640, 480,
+        WINDOW_WIDTH, WINDOW_HEIGHT,
         SDL_WINDOW_SHOWN);
 
     if (!window) {

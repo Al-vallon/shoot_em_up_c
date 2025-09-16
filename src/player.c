@@ -1,4 +1,5 @@
 #include "player.h"
+#include "config.h"
 
 #include <string.h>
 
@@ -19,9 +20,9 @@ void init_player(Player *player, const char *name, int x, int y) {
 
 void update_player(Player *player) {
     if (player->ship.x < 0) player->ship.x = 0;
-    if (player->ship.x > 640 - player->ship.width) player->ship.x = 640 - player->ship.width;
+    if (player->ship.x > WINDOW_WIDTH - player->ship.width) player->ship.x = WINDOW_WIDTH - player->ship.width;
     if (player->ship.y < 0) player->ship.y = 0;
-    if (player->ship.y > 480 - player->ship.height) player->ship.y = 480 - player->ship.height;
+    if (player->ship.y > WINDOW_HEIGHT - player->ship.height) player->ship.y = WINDOW_HEIGHT - player->ship.height;
 }
 
 void handle_player_input(Player *player, SDL_Event *event) {
