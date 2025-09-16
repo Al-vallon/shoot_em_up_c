@@ -8,7 +8,7 @@ void init_player(Player *player, const char *name, int x, int y, SDL_Renderer *r
     player->name[sizeof(player->name) - 1] = '\0'; // Ensure null-termination
     player->score = 0;
     player->life = 3;
-    
+
     // Initialize ship
     player->ship.health = 100;
     player->ship.x = x;
@@ -42,10 +42,6 @@ void handle_player_input(Player *player, SDL_Event *event) {
 }
 
 void render_player(Player *player, SDL_Renderer *renderer) {
-    //SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); // cyan
-    //SDL_Rect rect = { player->ship.x, player->ship.y, player->ship.width, player->ship.height };
-    //SDL_RenderFillRect(renderer, &rect);
-
     SDL_Rect rect = { player->ship.x, player->ship.y, player->ship.width, player->ship.height };
 
     if (player->texture) {

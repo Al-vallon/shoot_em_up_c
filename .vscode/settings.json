@@ -1,6 +1,7 @@
 {
     "diffEditor.experimental.useTrueInlineView": true,
     "files.associations": {
-        "game.h": "c"
+        "game.h": "c",
+        "hud.h": "c"
     }
 }
