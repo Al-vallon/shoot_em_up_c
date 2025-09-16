@@ -1,7 +1,7 @@
 # Makefile pour le jeu Shoot 'Em Up
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11 `sdl2-config --cflags`
-LDFLAGS = `sdl2-config --libs`
+LDFLAGS = `sdl2-config --libs` -lSDL2_image
 
 
 SRC = $(shell find src -name "*.c")

@@ -1,14 +1,12 @@
 #include "game.h"
-#include "hud/hud.h"
-#include "config.h"
+#include "../hud/hud.h"
+#include "../config.h"
 
-
-void init_game(Game *game) {
-    init_player(&game->player,"alex", WINDOW_WIDTH / 2, WINDOW_HEIGHT/2);  // centre l’écran
+void init_game(Game *game, SDL_Renderer *renderer) {
+    init_player(&game->player,"alex", WINDOW_WIDTH / 2, WINDOW_HEIGHT/2, renderer);  // centre l’écran
 }
 
 void handle_input(Game *game, SDL_Event *event) {
-    // Ici on route vers le joueur
     handle_player_input(&game->player, event);
 }
 

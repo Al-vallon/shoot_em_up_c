@@ -1,7 +1,6 @@
-
 #include "hud.h"
 #include <SDL2/SDL.h>
-#include "../player.h"
+#include "../player/player.h"
 
 void render_health_bar(Player *player, SDL_Renderer *renderer) {
     int bar_width = 200;

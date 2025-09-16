@@ -1,6 +1,8 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
 #include <stdio.h>
-#include "game.h"
+#include "./game/game.h"
 #include "config.h"
 
 int main(int argc, char *argv[]) {
@@ -34,7 +36,7 @@ int main(int argc, char *argv[]) {
     }
 
     Game game;
-    init_game(&game);
+    init_game(&game, renderer);
 
     int running = 1;
     SDL_Event event;

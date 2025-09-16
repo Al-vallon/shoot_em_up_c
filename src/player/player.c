@@ -1,21 +1,26 @@
-#include "player.h"
-#include "config.h"
+#include "../player/player.h"
+#include "../config.h"
 
 #include <string.h>
 
-void init_player(Player *player, const char *name, int x, int y) {
+void init_player(Player *player, const char *name, int x, int y, SDL_Renderer *renderer) {
     strncpy(player->name, name, sizeof(player->name) - 1);
     player->name[sizeof(player->name) - 1] = '\0'; // Ensure null-termination
     player->score = 0;
     player->life = 3;
+    
     // Initialize ship
-    // For simplicity, we set some default values
     player->ship.health = 100;
     player->ship.x = x;
     player->ship.y = y;
     player->ship.width = 50;
     player->ship.height = 50;
     player->ship.speed = 5;
+
+    player->texture = IMG_LoadTexture(renderer, "assets/sprite/ship/hero.png");
+    if (!player->texture) {
+        SDL_Log("Failed to load player texture: %s", SDL_GetError());
+    }
 }
 
 void update_player(Player *player) {
@@ -37,9 +42,18 @@ void handle_player_input(Player *player, SDL_Event *event) {
 }
 
 void render_player(Player *player, SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); // cyan
+    //SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); // cyan
+    //SDL_Rect rect = { player->ship.x, player->ship.y, player->ship.width, player->ship.height };
+    //SDL_RenderFillRect(renderer, &rect);
+
     SDL_Rect rect = { player->ship.x, player->ship.y, player->ship.width, player->ship.height };
-    SDL_RenderFillRect(renderer, &rect);
+
+    if (player->texture) {
+        SDL_RenderCopy(renderer, player->texture, NULL, &rect);
+    } else {
+        SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); // cyan
+        SDL_RenderFillRect(renderer, &rect);
+    }
 }
 
 void cleanup_player(Player *player) {
