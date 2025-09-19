@@ -42,14 +42,9 @@ int main(int argc, char *argv[]) {
     // Test initial pour vérifier SDL_Log
     SDL_Log("SDL_Log fonctionne correctement.");
 
-    // Configurer une fonction de sortie personnalisée pour SDL_Log
-   
-
     Game game;
     SDL_Log("Initializing game...");
     init_game(&game, renderer);
-    SDL_Log("Initializing enemies...");
-    init_enemies(&game.enemies[0], 1, 100, 100, renderer);
     SDL_Log("game initialized");
     SDL_Log("Enemies initialized");
 

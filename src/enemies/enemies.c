@@ -1,55 +1,33 @@
 #define ENEMIES_C
 #include "enemies.h"
 
-void init_enemies(Enemies *enemies, int type, int x, int y, SDL_Renderer *renderer) {
-    SDL_Log("Initializing enemy at (%d, %d) with type %d", x, y, type);
+#include <time.h>
 
-    // Define spawn position using set_enemy_position
-    set_enemy_position(&enemies->ship, x, y);
-
-    enemies->type = type;
-    enemies->is_active = 1; // Actif par défaut
-    enemies->is_boss = (type == 2); // Supposons que le type 2 est un boss
-
-    // Initialiser les propriétés du vaisseau ennemi en fonction du type
-    switch (type) {
-        case 1: // Ennemi standard
-            enemies->ship.health = 50;
-            enemies->ship.width = 40;
-            enemies->ship.height = 40;
-            enemies->ship.speed = 3;
-            enemies->texture = IMG_LoadTexture(renderer, "assets/sprite/ship/enemy1.png");
-            break;
-        case 2: // Boss
-            enemies->ship.health = 200;
-            enemies->ship.width = 100;
-            enemies->ship.height = 100;
-            enemies->ship.speed = 1;
-            enemies->texture = IMG_LoadTexture(renderer, "assets/sprite/ship/boss.png");
-            break;
-        default:
-            // Valeurs par défaut pour les types inconnus
-            enemies->ship.health = 30;
-            enemies->ship.width = 30;
-            enemies->ship.height = 30;
-            enemies->ship.speed = 2;
-            enemies->texture = IMG_LoadTexture(renderer, "assets/sprite/ship/enemy_default.png");
-            break;
-    }
-
-    if (!enemies->texture) {
-        SDL_Log("Failed to load enemy texture: %s", SDL_GetError());
-        enemies->is_active = false; // Désactiver l'ennemi si la texture n'est pas chargée
-        return;
-    }
-
-    // Log détaillé après l'initialisation de l'ennemi
-    SDL_Log("Enemy initialized: type=%d, x=%d, y=%d, width=%d, height=%d, health=%d, texture=%p", 
-            enemies->type, enemies->ship.x, enemies->ship.y, 
-            enemies->ship.width, enemies->ship.height, enemies->ship.health, enemies->texture);
+// fonction usuelle
+int random_delay(int min, int max) {
+    return rand() % (max - min + 1) + min;
 }
 
-void render_enemies(Enemies *enemies, SDL_Renderer *renderer) {
+void init_enemies(Enemies enemies[10], int type, int x, int y, SDL_Renderer *renderer) {
+    Uint32 current_time = SDL_GetTicks(); // Temps actuel en millisecondes
+
+    for (int i = 0; i < 10; i++) {
+        enemies[i].ship.x = x + i * 50; // Décalage pour chaque ennemi
+        enemies[i].ship.y = y;
+        enemies[i].ship.width = 40;
+        enemies[i].ship.height = 40;
+        enemies[i].ship.health = 50;
+        enemies[i].type = type;
+        enemies[i].is_active = false; // Désactivé par défaut
+        enemies[i].spawn_time = current_time + random_delay(1000, 5000); // Apparition entre 1 et 5 secondes
+        enemies[i].texture = IMG_LoadTexture(renderer, "assets/sprite/ship/enemy1.png");
+        if (!enemies[i].texture) {
+            SDL_Log("Failed to load enemy texture: %s", SDL_GetError());
+        }
+    }
+}
+
+void render_enemies(Enemies enemies[10], SDL_Renderer *renderer) {
     SDL_Log("Rendering enemy at (%d, %d)", enemies->ship.x, enemies->ship.y);
     // Vérification des pointeurs avant le rendu
     if (!renderer) {
@@ -70,7 +48,21 @@ void render_enemies(Enemies *enemies, SDL_Renderer *renderer) {
     }
 }
 
-void cleanup_enemies(Enemies *enemies) {
+void update_enemies(Enemies enemies[10]) {
+    Uint32 current_time = SDL_GetTicks(); // Temps actuel en millisecondes
+
+    for (int i = 0; i < 10; i++) {
+        // Ajouter des logs pour déboguer les temps d'apparition
+        SDL_Log("Current time: %d, Enemy %d spawn time: %d", current_time, i, enemies[i].spawn_time);
+
+        if (!enemies[i].is_active && current_time >= enemies[i].spawn_time) {
+            enemies[i].is_active = true;
+            SDL_Log("Enemy %d activated at time %d", i, current_time);
+        }
+    }
+}
+
+void cleanup_enemies(Enemies enemies[10]) {
     // Vérification des pointeurs avant de détruire la texture
     if (!enemies) {
         SDL_Log("Enemies pointer is NULL, skipping cleanup.");
