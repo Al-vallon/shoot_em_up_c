@@ -7,7 +7,8 @@
 
 typedef struct {
     Player player;
-    Enemies enemies[10]; // Exemple avec un tableau fixe de 10 ennemis
+    Enemy enemies[MAX_ENEMIES];
+    SDL_Texture *enemy_texture;
 } Game;
 
 void init_game(Game *game, SDL_Renderer *renderer);

@@ -1,25 +1,35 @@
-#define ENEMIES_C
 #include "enemies.h"
-
-#include <time.h>
+#include "../config.h"
+#include <stdlib.h>
+#include <math.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 // fonction usuelle
 int random_delay(int min, int max) {
     return rand() % (max - min + 1) + min;
 }
 
-void init_enemies(Enemies enemies[10], int type, int x, int y, SDL_Renderer *renderer) {
-    Uint32 current_time = SDL_GetTicks(); // Temps actuel en millisecondes
-
-    for (int i = 0; i < 10; i++) {
-        enemies[i].ship.x = x + i * 50; // Décalage pour chaque ennemi
-        enemies[i].ship.y = y;
+void init_enemies(Enemy enemies[MAX_ENEMIES], int type, int x, int y, SDL_Renderer *renderer) {
+    SDL_Log("[enemies] Initializing enemies array: %p, Renderer: %p", enemies, renderer);
+    if (!enemies || !renderer) {
+        SDL_Log("[enemies] Enemies array or renderer is NULL, aborting init_enemies.");
+        return;
+    }
+    Uint32 current_time = SDL_GetTicks();
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        enemies[i].ship.x = rand() % WINDOW_WIDTH;
+        enemies[i].ship.y = rand() % WINDOW_HEIGHT;
         enemies[i].ship.width = 40;
         enemies[i].ship.height = 40;
         enemies[i].ship.health = 50;
         enemies[i].type = type;
-        enemies[i].is_active = false; // Désactivé par défaut
-        enemies[i].spawn_time = current_time + random_delay(1000, 5000); // Apparition entre 1 et 5 secondes
+        enemies[i].is_active = false;
+        enemies[i].is_boss = (type == 2);
+        enemies[i].spawn_time = current_time + (rand() % 5000);
+        enemies[i].speed_x = (rand() % 5) + 1;
+        enemies[i].speed_y = (rand() % 3) + 1;
+        enemies[i].start_x = enemies[i].ship.x;
         enemies[i].texture = IMG_LoadTexture(renderer, "assets/sprite/ship/enemy1.png");
         if (!enemies[i].texture) {
             SDL_Log("Failed to load enemy texture: %s", SDL_GetError());
@@ -27,69 +37,55 @@ void init_enemies(Enemies enemies[10], int type, int x, int y, SDL_Renderer *ren
     }
 }
 
-void render_enemies(Enemies enemies[10], SDL_Renderer *renderer) {
-    SDL_Log("Rendering enemy at (%d, %d)", enemies->ship.x, enemies->ship.y);
-    // Vérification des pointeurs avant le rendu
-    if (!renderer) {
-        SDL_Log("Renderer is NULL, cannot render enemy.");
-        return;
-    }
+void update_enemies(Enemy enemies[MAX_ENEMIES]) {
+    SDL_Log("[enemies] Updating enemies array: %p", enemies);
     if (!enemies) {
-        SDL_Log("Enemies pointer is NULL, cannot render.");
+        SDL_Log("[enemies] Enemies array is NULL, aborting update_enemies.");
         return;
     }
-    if (!enemies->texture) {
-        SDL_Log("Enemy texture is NULL, skipping render.");
-        return;
-    }
-    if (enemies->is_active && enemies->texture) {
-        SDL_Rect rect = { enemies->ship.x, enemies->ship.y, enemies->ship.width, enemies->ship.height };
-        SDL_RenderCopy(renderer, enemies->texture, NULL, &rect);
-    }
-}
-
-void update_enemies(Enemies enemies[10]) {
-    Uint32 current_time = SDL_GetTicks(); // Temps actuel en millisecondes
-
-    for (int i = 0; i < 10; i++) {
-        // Ajouter des logs pour déboguer les temps d'apparition
-        SDL_Log("Current time: %d, Enemy %d spawn time: %d", current_time, i, enemies[i].spawn_time);
-
+    Uint32 current_time = SDL_GetTicks();
+    for (int i = 0; i < MAX_ENEMIES; i++) {
         if (!enemies[i].is_active && current_time >= enemies[i].spawn_time) {
             enemies[i].is_active = true;
             SDL_Log("Enemy %d activated at time %d", i, current_time);
         }
+        if (enemies[i].is_active) {
+            // Exemple de déplacement : zig-zag horizontal
+            if (enemies[i].type == 1) {
+                enemies[i].ship.x = enemies[i].start_x + (int)(20 * sin(current_time / 500.0));
+            }
+            // Mouvement vertical
+            enemies[i].ship.y += enemies[i].speed_y;
+        }
     }
 }
 
-void cleanup_enemies(Enemies enemies[10]) {
-    // Vérification des pointeurs avant de détruire la texture
+void render_enemies(Enemy enemies[MAX_ENEMIES], SDL_Renderer *renderer) {
+    SDL_Log("[enemies] Rendering enemies array: %p, Renderer: %p", enemies, renderer);
+    if (!enemies || !renderer) {
+        SDL_Log("[enemies] Enemies array or renderer is NULL, aborting render_enemies.");
+        return;
+    }
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (!renderer || !enemies[i].texture) continue;
+        if (enemies[i].is_active) {
+            SDL_Rect rect = { enemies[i].ship.x, enemies[i].ship.y, enemies[i].ship.width, enemies[i].ship.height };
+            SDL_RenderCopy(renderer, enemies[i].texture, NULL, &rect);
+        }
+    }
+}
+
+void cleanup_enemies(Enemy enemies[MAX_ENEMIES]) {
+    SDL_Log("[enemies] Cleaning up enemies array: %p", enemies);
     if (!enemies) {
-        SDL_Log("Enemies pointer is NULL, skipping cleanup.");
+        SDL_Log("[enemies] Enemies array is NULL, aborting cleanup_enemies.");
         return;
     }
-    if (!enemies->texture) {
-        SDL_Log("Enemy texture is NULL, nothing to destroy.");
-        return;
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (enemies[i].texture) {
+            SDL_DestroyTexture(enemies[i].texture);
+            enemies[i].texture = NULL;
+        }
+        enemies[i].is_active = false;
     }
-
-    if (enemies->texture) {
-        SDL_Log("Destroying enemy texture");
-        SDL_DestroyTexture(enemies->texture);
-        enemies->texture = NULL;
-    }
-    enemies->is_active = false;
 }
-
-// Fonction pour définir la position initiale d'un ennemi
-void set_enemy_position(Ship *ship, int x, int y) {
-    if (!ship) {
-        SDL_Log("Ship pointer is NULL, cannot set position.");
-        return;
-    }
-    ship->x = x;
-    ship->y = y;
-    SDL_Log("Ship position set to (%d, %d)", x, y);
-}
-
-

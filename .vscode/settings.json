@@ -2,6 +2,7 @@
     "diffEditor.experimental.useTrueInlineView": true,
     "files.associations": {
         "game.h": "c",
-        "hud.h": "c"
+        "hud.h": "c",
+        "player.h": "c"
     }
 }

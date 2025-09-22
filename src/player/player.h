@@ -18,6 +18,7 @@ void init_player(Player *player, const char *name, int x, int y, SDL_Renderer *r
 void update_player(Player *player);
 void handle_player_input(Player *player, SDL_Event *event);
 void render_player(Player *player, SDL_Renderer *renderer);
+void cleanup_player(Player *player);
 
 
 #endif // PLAYER_H

@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
         }
 
         SDL_Log("Updating game...");
+        SDL_Log("[main] Appel de update_game avec game: %p", &game);
         update_game(&game);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // fond noir
