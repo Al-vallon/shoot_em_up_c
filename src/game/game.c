@@ -1,37 +1,3 @@
-// #include "game.h"
-// #include "../hud/hud.h"
-// #include "../config.h"
-
-// void init_game(Game *game, SDL_Renderer *renderer) {
-//     init_player(&game->player,"alex", WINDOW_WIDTH / 2, WINDOW_HEIGHT/2, renderer);  // centre l’écran
-//     init_enemies(game->enemies, 1, 100, 100, renderer);
-//     for (int i = 0; i < MAX_ENEMIES; i++) {
-//         game->enemies[i].texture = enemy_texture;
-//     }
-// }
-
-// void handle_input(Game *game, SDL_Event *event) {
-//     handle_player_input(&game->player, event);
-// }
-
-// void update_game(Game *game) {
-//     update_player(&game->player);
-//     update_enemies(game->enemies);
-// }
-
-// void render_game(Game *game, SDL_Renderer *renderer) {
-//     render_player(&game->player, renderer);
-//     render_health_bar(&game->player, renderer);
-//     for (int i = 0; i < 10; i++) {
-//         render_enemies(game->enemies[i], renderer);
-//     }
-
-// }
-
-// void cleanup_game(Game *game) {
-//     cleanup_player(&game->player);
-//     cleanup_enemies(game->enemies);
-// }
 #include "game.h"
 #include "../hud/hud.h"
 #include "../config.h"

@@ -23,13 +23,14 @@ void init_enemies(Enemy enemies[MAX_ENEMIES], int type, int x, int y, SDL_Render
         enemies[i].ship.width = 40;
         enemies[i].ship.height = 40;
         enemies[i].ship.health = 50;
-        enemies[i].type = type;
+        enemies[i].type = rand() % 3; // Random type for diversity
         enemies[i].is_active = false;
         enemies[i].is_boss = (type == 2);
         enemies[i].spawn_time = current_time + (rand() % 5000);
-        enemies[i].speed_x = (rand() % 5) + 1;
-        enemies[i].speed_y = (rand() % 3) + 1;
+        enemies[i].speed_x = (rand() % 4) -1;
+        enemies[i].speed_y = 1 + rand() % 2;
         enemies[i].start_x = enemies[i].ship.x;
+        enemies[i].phase = rand() % 360;
         enemies[i].texture = IMG_LoadTexture(renderer, "assets/sprite/ship/enemy1.png");
         if (!enemies[i].texture) {
             SDL_Log("Failed to load enemy texture: %s", SDL_GetError());
@@ -51,11 +52,25 @@ void update_enemies(Enemy enemies[MAX_ENEMIES]) {
         }
         if (enemies[i].is_active) {
             // Exemple de déplacement : zig-zag horizontal
-            if (enemies[i].type == 1) {
-                enemies[i].ship.x = enemies[i].start_x + (int)(20 * sin(current_time / 500.0));
+            // if (enemies[i].type == 1) {
+            //     enemies[i].ship.x = enemies[i].start_x + (int)(20 * sin(current_time / 500.0));
+            // }
+            // gerer le mouvement selon le type
+            if (enemies[i].type == 0) {
+                enemies[i].ship.y += enemies[i].speed_y;
             }
+            else if (enemies[i].type == 1) {
+                enemies[i].ship.x = enemies[i].start_x + (int)(20 * sin((current_time / 500.0) + enemies[i].phase));
+                enemies[i].ship.y += enemies[i].speed_y;
+            }
+            else if (enemies[i].type == 2) {
+                enemies[i].ship.x = enemies[i].start_x + (int)(30 * sin(current_time / 300.0 + enemies[i].phase));
+                enemies[i].ship.y += enemies[i].speed_y;
+            }
+
             // Mouvement vertical
             enemies[i].ship.y += enemies[i].speed_y;
+            enemies[i].ship.x = enemies[i].start_x + (int)(20 * sin((current_time / 500.0) + enemies[i].phase));
         }
     }
 }
