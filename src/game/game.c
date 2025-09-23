@@ -1,6 +1,7 @@
 #include "game.h"
 #include "../hud/hud.h"
 #include "../config.h"
+#include "../collision/collision.h"
 #include <SDL2/SDL_image.h>
 
 static SDL_Texture* enemy_texture = NULL;
@@ -50,6 +51,16 @@ void update_game(Game *game) {
     SDL_Log("[game] update_game: after update_player, before update_enemies");
     update_enemies(game->enemies);
     SDL_Log("[game] update_game: after update_enemies");
+
+    for(int i = 0; i < MAX_ENEMIES; i++) {
+        if (game->enemies[i].is_active) {
+            if (check_collision(&game->player.ship, &game->enemies[i].ship)) {
+                SDL_Log("Collision detected with enemy %d!", i);
+                game->player.ship.health -= 10; // exemple
+                game->enemies[i].is_active = false; // supprimer l’ennemi
+            }
+        }
+    }
 }
 
 void render_game(Game *game, SDL_Renderer *renderer) {

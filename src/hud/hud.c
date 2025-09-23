@@ -14,8 +14,7 @@ void render_health_bar(Player *player, SDL_Renderer *renderer) {
     SDL_RenderFillRect(renderer, &bg_rect);
 
     // Dessiner la partie de la barre de vie correspondant à la santé actuelle (vert)
-    int health_width = (player->ship.health * bar_width) / 100; // Supposant que la santé maximale est 100
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    int health_width = (player->ship.health * bar_width) / 100; 
     SDL_Rect health_rect = { x, y, health_width, bar_height };
     SDL_RenderFillRect(renderer, &health_rect);
 
