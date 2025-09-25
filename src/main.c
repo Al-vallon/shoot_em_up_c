@@ -77,17 +77,11 @@ int main(int argc, char *argv[]) {
     }
     SDL_Log("Exiting main loop...");
 
-    // Initialiser explicitement la structure Game
-    memset(&game, 0, sizeof(Game));
 
-    // Ajouter des logs pour vérifier la libération des ressources SDL
-    SDL_Log("Libération des ressources SDL...");
-
-    // Ajout de journaux pour vérifier la destruction des ressources
+    // Clean up game resources and SDL objects
     SDL_Log("Cleaning up game resources");
     cleanup_game(&game);
 
-    // Vérification supplémentaire pour la libération des ressources SDL
     if (renderer) {
         SDL_Log("Destruction du renderer");
         SDL_DestroyRenderer(renderer);
@@ -96,12 +90,6 @@ int main(int argc, char *argv[]) {
     if (window) {
         SDL_Log("Destruction de la fenêtre");
         SDL_DestroyWindow(window);
-    }
-
-    // Vérification supplémentaire pour la libération des textures SDL
-    if (game.enemies[0].texture) {
-        SDL_Log("Destruction de la texture de l'ennemi");
-        SDL_DestroyTexture(game.enemies[0].texture);
     }
 
     SDL_Log("Quitting SDL");

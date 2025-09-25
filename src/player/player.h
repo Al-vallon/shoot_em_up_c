@@ -11,7 +11,10 @@ typedef struct {
     int life;       
     Ship ship;
     SDL_Texture *texture; // Texture du vaisseau
+    Uint32 last_hit_time; // Temps du dernier hit pour le cooldown
 } Player;
+
+void damage_player(Player *player, int damage);
 
 // Prototypes des fonctions
 void init_player(Player *player, const char *name, int x, int y, SDL_Renderer *renderer);

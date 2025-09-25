@@ -3,6 +3,7 @@
     "files.associations": {
         "game.h": "c",
         "hud.h": "c",
-        "player.h": "c"
+        "player.h": "c",
+        "collision.h": "c"
     }
 }

@@ -3,6 +3,52 @@
 
 #include <string.h>
 
+// Function to handle player input
+void handle_player_input(Player *player, SDL_Event *event) {
+    Uint8 *keystate = SDL_GetKeyboardState(NULL);
+    if (keystate[SDL_SCANCODE_LEFT]) {
+        player->ship.x -= player->ship.speed;
+    }
+    if (keystate[SDL_SCANCODE_RIGHT]) {
+        player->ship.x += player->ship.speed;
+    }
+    if (keystate[SDL_SCANCODE_UP]) {
+        player->ship.y -= player->ship.speed;
+    }
+    if (keystate[SDL_SCANCODE_DOWN]) {
+        player->ship.y += player->ship.speed;
+    }
+
+    // if (keystate[SDL_SCANCODE_SPACE]) {
+    //     // Tirer un projectile (à implémenter)
+    // }
+}
+
+void damage_player(Player *player, int damage) {
+    if (!player || !player->ship.is_active) return; // protection si joueur mort
+
+    player->ship.health -= damage;
+
+    SDL_Log("Player damaged! Health: %d", player->ship.health);
+
+    if (player->ship.health <= 0) {
+        player->life--;
+
+        if (player->life > 0) {
+            // Respawn
+            player->ship.health = 100;
+            player->ship.x = WINDOW_WIDTH / 2;
+            player->ship.y = WINDOW_HEIGHT - 100;
+            player->ship.is_active = true; // réactiver le joueur
+            SDL_Log("Player respawned! Lives left: %d", player->life);
+        } else {
+            // Game Over
+            player->ship.is_active = false;
+            SDL_Log("Game Over!");
+        }
+    }
+}
+
 void init_player(Player *player, const char *name, int x, int y, SDL_Renderer *renderer) {
     SDL_Log("[player] Initializing player struct: %p, Renderer: %p", player, renderer);
     if (!player || !renderer) {
@@ -11,6 +57,7 @@ void init_player(Player *player, const char *name, int x, int y, SDL_Renderer *r
     }
 
     strncpy(player->name, name, sizeof(player->name) - 1);
+    player->life = 100;
 
     player->name[sizeof(player->name) - 1] = '\0'; // Ensure null-termination
     player->score = 0;
@@ -30,6 +77,9 @@ void init_player(Player *player, const char *name, int x, int y, SDL_Renderer *r
     } else {
         SDL_Log("Player texture loaded successfully");
     }
+
+    player->ship.is_active = true;
+    player->last_hit_time = 0;
 }
 
 void update_player(Player *player) {
@@ -43,26 +93,6 @@ void update_player(Player *player) {
     if (player->ship.x > WINDOW_WIDTH - player->ship.width) player->ship.x = WINDOW_WIDTH - player->ship.width;
     if (player->ship.y < 0) player->ship.y = 0;
     if (player->ship.y > WINDOW_HEIGHT - player->ship.height) player->ship.y = WINDOW_HEIGHT - player->ship.height;
-}
-
-void handle_player_input(Player *player, SDL_Event *event) {
-    Uint8 *keystate = SDL_GetKeyboardState(NULL);
-    if (keystate[SDL_SCANCODE_LEFT]) {
-        player->ship.x -= player->ship.speed;
-    }
-    if (keystate[SDL_SCANCODE_RIGHT]) {
-        player->ship.x += player->ship.speed;
-    }
-    if (keystate[SDL_SCANCODE_UP]) {
-        player->ship.y -= player->ship.speed;
-    }
-    if (keystate[SDL_SCANCODE_DOWN]) {
-        player->ship.y += player->ship.speed;
-    }
-
-    // if (keystate[SDL_SCANCODE_SPACE]) {
-    //     // Tirer un projectile (à implémenter)
-    // }
 }
 
 void render_player(Player *player, SDL_Renderer *renderer) {

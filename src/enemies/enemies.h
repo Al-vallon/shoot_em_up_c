@@ -20,11 +20,12 @@ typedef struct {
     int speed_y;         // Vitesse verticale
     int start_x;         // Position horizontale initiale pour mouvements spéciaux
     int phase;           // Phase pour les mouvements sinusoïdaux
+    int damage;         // Dégâts infligés au joueur
 } Enemy;
 
 // Prototypes
 SDL_Texture* load_enemy_texture(SDL_Renderer *renderer, const char *path);
-void init_enemies(Enemy enemies[MAX_ENEMIES], int type, int x, int y, SDL_Renderer *renderer);
+void init_enemies(Enemy enemies[MAX_ENEMIES], int type, SDL_Renderer *renderer, SDL_Texture *enemy_texture);
 void update_enemies(Enemy enemies[MAX_ENEMIES]);
 void render_enemies(Enemy enemies[MAX_ENEMIES], SDL_Renderer *renderer);
 void cleanup_enemies(Enemy enemies[MAX_ENEMIES]);

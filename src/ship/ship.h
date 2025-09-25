@@ -2,6 +2,7 @@
 #define SHIP_H
 
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 
 typedef struct {
     int score;
@@ -9,6 +10,8 @@ typedef struct {
     int x, y;
     int width, height;
     int speed;
+    int damage;
+    bool is_active;
 } Ship;
 
 #endif // SHIP_H
