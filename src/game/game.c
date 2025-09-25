@@ -1,4 +1,5 @@
 #include "game.h"
+#include "../weapon/weapon.h"
 #include "../hud/hud.h"
 #include "../config.h"
 #include "../collision/collision.h"
@@ -54,6 +55,8 @@ void update_game(Game *game) {
     // Mise à jour du joueur
     if (game->player.ship.is_active)
         update_player(&game->player);
+    
+    majMissiles();
 
     // Mise à jour des ennemis
     update_enemies(game->enemies);
@@ -61,6 +64,24 @@ void update_game(Game *game) {
     // Vérification des collisions
     Uint32 now = SDL_GetTicks();
     const Uint32 HIT_COOLDOWN_MS = 500; // demi seconde
+    
+    Missile *cur = listeMissiles;
+    while (cur != NULL) {
+        for (int e = 0; e < MAX_ENEMIES; e++) {
+            Enemy *enemy = &game->enemies[e];
+            if (!enemy->is_active) continue;
+
+            if (missile_enemy_collision(cur, enemy, now)) {
+                SDL_Log("Missile hit enemy!");
+                enemy->is_active = false;
+                enemy->ship.x = -1000;
+                enemy->ship.y = -1000;
+                enemy->spawn_time = now + random_delay(3000, 10000);
+            }
+        }
+        cur = cur->suivant;
+    }
+
 
     for (int i = 0; i < MAX_ENEMIES; i++) {
         Enemy *e = &game->enemies[i];
@@ -76,12 +97,10 @@ void update_game(Game *game) {
                 game->player.last_hit_time = now;
             }
 
-            // désactiver l'ennemi immédiatement
             e->is_active = false;
-            // optionnel : le déplacer hors-écran pour éviter tout recouvrement
             e->ship.x = -1000;
             e->ship.y = -1000;
-            // ou replanifier spawn:
+        
             e->spawn_time = now + random_delay(3000, 10000);
         }
     }
@@ -90,6 +109,7 @@ void update_game(Game *game) {
 void render_game(Game *game, SDL_Renderer *renderer) {
     render_player(&game->player, renderer);
     render_enemies(game->enemies, renderer);
+    dessinerMissiles(renderer);
 
     //HUD DISplay
     render_health_bar(&game->player, renderer);
@@ -105,6 +125,9 @@ void cleanup_game(Game *game) {
 
     cleanup_player(&game->player);
     
+    // Destroy any active missiles (dynamic linked list)
+    detruireMissiles();
+
     cleanup_enemies(game->enemies); 
     if (enemy_texture) {
         SDL_DestroyTexture(enemy_texture);

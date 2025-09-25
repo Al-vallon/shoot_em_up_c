@@ -1,5 +1,6 @@
 #include "../player/player.h"
 #include "../config.h"
+#include "../weapon/weapon.h"
 
 #include <string.h>
 
@@ -19,9 +20,15 @@ void handle_player_input(Player *player, SDL_Event *event) {
         player->ship.y += player->ship.speed;
     }
 
-    // if (keystate[SDL_SCANCODE_SPACE]) {
-    //     // Tirer un projectile (à implémenter)
-    // }
+    if (keystate[SDL_SCANCODE_SPACE]) {
+        Uint32 now = SDL_GetTicks();
+        const Uint32 SHOOT_COOLDOWN_MS = 250; // 4 tirs/s
+        if (now - player->last_shot_time >= SHOOT_COOLDOWN_MS) {
+            tirerMissile((float)(player->ship.x + player->ship.width/2), (float)player->ship.y);
+            player->last_shot_time = now;
+        }
+    }
+    
 }
 
 void damage_player(Player *player, int damage) {
@@ -80,6 +87,7 @@ void init_player(Player *player, const char *name, int x, int y, SDL_Renderer *r
 
     player->ship.is_active = true;
     player->last_hit_time = 0;
+    player->last_shot_time = 0;
 }
 
 void update_player(Player *player) {
@@ -93,6 +101,20 @@ void update_player(Player *player) {
     if (player->ship.x > WINDOW_WIDTH - player->ship.width) player->ship.x = WINDOW_WIDTH - player->ship.width;
     if (player->ship.y < 0) player->ship.y = 0;
     if (player->ship.y > WINDOW_HEIGHT - player->ship.height) player->ship.y = WINDOW_HEIGHT - player->ship.height;
+
+
+    // // Mettre à jour les armes
+    // for (int i = 0; i < player->weapon_count; i++) {
+    //     Weapon *w = &player->weapons[i];
+    //     if (!w->is_active) continue;
+
+    //     w->ship.y += w->speed_y;
+
+    //     // Si le missile sort de l’écran, on le désactive
+    //     if (w->ship.y < 0) {
+    //         w->is_active = false;
+    //     }
+    // }
 }
 
 void render_player(Player *player, SDL_Renderer *renderer) {
@@ -112,6 +134,8 @@ void render_player(Player *player, SDL_Renderer *renderer) {
         SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); // cyan
         SDL_RenderFillRect(renderer, &rect);
     }
+
+    // missiles are rendered globally via dessinerMissiles(renderer)
 }
 
 void cleanup_player(Player *player) {

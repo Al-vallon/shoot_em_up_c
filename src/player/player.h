@@ -12,6 +12,7 @@ typedef struct {
     Ship ship;
     SDL_Texture *texture; // Texture du vaisseau
     Uint32 last_hit_time; // Temps du dernier hit pour le cooldown
+    Uint32 last_shot_time; // Temps du dernier tir pour limiter la cadence
 } Player;
 
 void damage_player(Player *player, int damage);
