@@ -1,5 +1,5 @@
 # run le projet 1
-### clance le conteneur
+### lance le conteneur
 
 ./rundev.sh
 
