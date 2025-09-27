@@ -9,7 +9,7 @@ gcc main.c -o main $(sdl2-config --cflags --libs)
 ./main
 
 # Run projet2 SDL2
-### lance le contenuer.
+### lance le conteneur
 ./rundev.sh
 
 ### créer le binaire shoot_em_up
