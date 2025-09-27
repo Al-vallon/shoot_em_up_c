@@ -16,9 +16,9 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: x64
-      - name: Build with Makefile
+      - name: Build with Windows Makefile
         run: |
-          mingw32-make
+          mingw32-make -f Makefile.windows
       - name: Upload EXE
         uses: actions/upload-artifact@v3
         with:
