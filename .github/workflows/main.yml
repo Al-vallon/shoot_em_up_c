@@ -16,6 +16,8 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: x64
+          # Désactive le nettoyage post-installation
+          skip-post-install: true
 
       - name: Build with Windows Makefile
         run: |
