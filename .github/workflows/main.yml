@@ -1,5 +1,4 @@
 name: Build Windows EXE
-
 on:
   push:
     branches: [ project2_SDL2 ]
@@ -11,16 +10,19 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
       - name: Install MinGW
         uses: egor-tensin/setup-mingw@v2
         with:
-          platform: x64
+          platform: x66_64
+
       - name: Build with Windows Makefile
         run: |
           mingw32-make -f Makefile.windows
+
       - name: Upload EXE
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: shoot-em-up
           path: shoot-em-up.exe
