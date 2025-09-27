@@ -36,6 +36,8 @@
 *.x86_64
 *.hex
 
+shoot_em_up
+
 # Debug files
 *.dSYM/
 *.su
